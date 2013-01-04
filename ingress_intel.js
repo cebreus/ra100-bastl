@@ -24,7 +24,7 @@ var headID = document.getElementsByTagName("head")[0];
 		$("head").append(style);
 		$("body").prepend(tag);
 		$("#nav").empty();
-		$("#enhance").append('<div class="button" id="copytitle">copy</div>');
+		$("#enhance").append('<div class="button" id="copytitle">copy portal name</div>');
 		$("#copytitle").click(function() {
 			$("#portaltitle").text($("#portal_primary_title").text());
 		});
