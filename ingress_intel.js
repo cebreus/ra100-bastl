@@ -16,7 +16,10 @@ var headID = document.getElementsByTagName("head")[0];
     headID.appendChild(newScript);
 
     window.addEventListener('load', function (e)  {
-    	var style = '<style>#enhance {position: fixed; left: 0px; top: 0px; display: block; background: #fff; color: #000; width: 500px; height: 50px;}</style>';
+    	var style = '<style>#enhance {position: absolute; left: 0px; top: 0px; display: block; background: #000; color: #59FBEA;}'+
+    	'.button {cursor: pointer; background-color: #004F4A; color: #59FBEA; padding: 1px 15px; font-size: 13px; border: #59FBEA 1px solid; float: left;}'+
+    	'#portaltitle {padding: 0px 5px; float: left; border: 1px solid #59FBEA; width: 427px; height: 23px; font-size: 12px;}'
+    	+'</style>';
 		var tag = '<div id="enhance"></div>';
 		$("head").append(style);
 		$("body").prepend(tag);
