@@ -19,7 +19,13 @@
     	var style = '<style>#enhance {z-index: 2000; position: absolute; left: 0px; top: 0px; display: block; background: #000; color: #59FBEA;}'+
     	'.button {cursor: pointer; background-color: #004F4A; color: #59FBEA; padding: 1px 15px; font-size: 13px; border: #59FBEA 1px solid; float: left;}'+
     	'#portaltitle {padding: 0px 10px; float: left; border: 1px solid #59FBEA; width: 427px; height: 23px; font-size: 12px;}'
-    	+'#log {clear: both; float: left; width: auto; max-height: 400px; overflow: auto; background: #000; color: #59FBEA; border: #59FBEA 1px solid; z-index: 20; display: block; font-size: 11px;}'
+    	+'#log {clear: both; float: left; width: auto; max-height: 400px; overflow: auto; background: #000; color: #59FBEA; border: #59FBEA 1px solid; z-index: 20; display: block; font-size: 11px;}'+
+    	'.row {clear: both; float: left;}'+
+    	'.team {claer: both; float: left;}'+
+    	'.name {font-weight: bold; padding-right: 5px;}'+
+    	'.level {font-color: red; padding-right: 10px;}'+
+    	'.areas {padding-left: 5px;}'+
+    	'.area {border-left: 1px solid #59FBEA; padding-left: 5px; padding-right: 5px;}'    	
     	+'</style>';
 		var tag = '<div id="enhance"></div>';
 		$("head").append(style);
@@ -135,7 +141,27 @@
 		$.each(data.result, function(i, users) {
 			players[users.guid]["name"] = users.nickname;
 		});
+		ing_showPlayers();
+		
+	}
+	
+	function ing_showPlayers() {
+		$("#log").append('<span class="team">RESISTANCE</span>');
 		console.log(players);
+		for (i in players) {
+			var player = players[i];
+			if (player.team == "RESISTANCE") {
+				var	areas = "";
+				for (j in player["areas"]) {
+					areas = areas+'<span class="area">'+j+" L"+player["areas"][j]+'</span>';
+				}
+				$("#log").append('<div class="row"><span class="name">'+player["name"]+'</span>'+
+						'<span class="level">'+player["level"]+'</span>'+
+						'<span class="areas">'+areas+'</span>'+
+						'</row>');
+			}
+		}
+		console.log("done");
 	}
  
  
@@ -168,7 +194,7 @@
 		var addr = "non-Prague"
 		if (ind == -1) {
 			ind = address.indexOf("Prague"); 
-			if (ind == -1){ addr = "non-Prague";}
+			if (ind == -1){ addr = "NA";}
 			else {addr = address.substr(ind+7,2);}
 		} else {addr = address.substr(ind+14,2);}
 		if (addr.substr(1,1) == ",") addr = addr.substr(0,1);
