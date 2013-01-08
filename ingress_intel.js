@@ -21,7 +21,7 @@
     	'#portaltitle {padding: 0px 10px; float: left; border: 1px solid #59FBEA; width: 427px; height: 23px; font-size: 12px;}'
     	+'#log {clear: both; float: left; width: auto; max-height: 400px; overflow: auto; background: #000; color: #59FBEA; border: #59FBEA 1px solid; z-index: 20; display: block; font-size: 11px;}'+
     	'.row {clear: both; float: left;}'+
-    	'.team {claer: both; float: left;}'+
+    	'.team {clear: both; float: left; font-weight: bold; font-size: 12px;}'+
     	'.name {font-weight: bold; padding-right: 5px;}'+
     	'.level {font-color: red; padding-right: 10px;}'+
     	'.areas {padding-left: 5px;}'+
@@ -141,26 +141,41 @@
 		$.each(data.result, function(i, users) {
 			players[users.guid]["name"] = users.nickname;
 		});
-		ing_showPlayers();
 		
+		ing_showPlayers();
 	}
 	
 	function ing_showPlayers() {
-		$("#log").append('<span class="team">RESISTANCE</span>');
-		console.log(players);
+		$("#log").append('<span class="team resistance">RESISTANCE</span>');
 		for (i in players) {
 			var player = players[i];
 			if (player.team == "RESISTANCE") {
 				var	areas = "";
 				for (j in player["areas"]) {
-					areas = areas+'<span class="area">'+j+" L"+player["areas"][j]+'</span>';
+					areas = areas+'<span class="area">'+j+" L"+player["areas"][j]+'</span>;';
 				}
-				$("#log").append('<div class="row"><span class="name">'+player["name"]+'</span>'+
-						'<span class="level">'+player["level"]+'</span>'+
+				$("#log").append('<div class="row resistance"><span class="name">'+player["name"]+'</span>;'+
+						'<span class="level">'+player["level"]+'</span>;'+
 						'<span class="areas">'+areas+'</span>'+
 						'</row>');
 			}
 		}
+		
+		$("#log").append('<span class="team enlightened">ENLIGHTENED</span>');
+		for (i in players) {
+			var player = players[i];
+			if (player.team == "ALIENS") {
+				var	areas = "";
+				for (j in player["areas"]) {
+					areas = areas+'<span class="area">'+j+" L"+player["areas"][j]+'</span>;';
+				}
+				$("#log").append('<div class="row enlightened"><span class="name">'+player["name"]+'</span>;'+
+						'<span class="level">'+player["level"]+'</span>;'+
+						'<span class="areas">'+areas+'</span>'+
+						'</row>');
+			}
+		}
+		$("#log").show();
 		console.log("done");
 	}
  
@@ -198,6 +213,7 @@
 			else {addr = address.substr(ind+7,2);}
 		} else {addr = address.substr(ind+14,2);}
 		if (addr.substr(1,1) == ",") addr = addr.substr(0,1);
+		if (addr.substr(1,1) == "-") addr = addr.substr(0,1);
 		return addr;
 	}
 	
