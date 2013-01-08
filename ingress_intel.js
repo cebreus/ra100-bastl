@@ -7,16 +7,31 @@
 (function ()
 {
 	var players = [];
-	var time = 0; //unix epoch timestamp
+	var portals = [];
+	var time = 0; //unix epoch timestamp in miliseconds
+	var portalUrl = "http://www.ingress.com/intel?latE6=!LAT!&lngE6=!LNG!&z=18";
+	var getThinnedEntitiesV2 = {};
 	
+// load of jQquery
 	var headID = document.getElementsByTagName("head")[0];         
     var newScript = document.createElement('script');
     newScript.type = 'text/javascript';
     newScript.id = 'myjQuery';
     newScript.src = 'http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js';
     headID.appendChild(newScript);
-
+// run jQuery code
     window.addEventListener('load', function (e)  {
+
+		$(document).ajaxSend(function(event, jqxhr, settings) {
+			if (settings.url == "/rpc/dashboard.getThinnedEntitiesV2") getThinnedEntitiesV2 = $.parseJSON(settings.data);
+		});
+
+		$(document).ajaxComplete(function(event, xhr, settings) {
+			if (settings.url == "/rpc/dashboard.getThinnedEntitiesV2") {
+				ing_processPortals($.parseJSON(xhr.responseText));
+			}
+		});
+
     	var style = '<style>#enhance {z-index: 2000; position: absolute; left: 0px; top: 0px; display: block; background: #000; color: #59FBEA;}'+
     	'.button {cursor: pointer; background-color: #004F4A; color: #59FBEA; padding: 1px 15px; font-size: 13px; border: #59FBEA 1px solid; float: left;}'+
     	'#portaltitle {padding: 0px 10px; float: left; border: 1px solid #59FBEA; width: 200px; height: 23px; font-size: 12px;}'
@@ -28,11 +43,11 @@
     	'.areas {padding-left: 5px;}'+
     	'.area {padding-left: 5px; padding-right: 5px;}' +
     	'.message {clear: both; float: left; font-size: 12px; width: auto; margin-left: 5px; margin-right: 5px;}'+
-    	'#textarea {display: none; position: absolute; z-index: 2000;}'   	
+    	'#textarea {display: none; position: absolute; z-index: 2000; color: #eee; background-color: #000; border: #59FBEA 1px solid; }'   	
     	+'</style>';
-		var tag = '<div id="enhance"></div>';
+
 		$("head").append(style);
-		$("body").prepend(tag);
+		$("body").prepend('<div id="enhance"></div>');
 		$("#nav").empty();
 		$("#enhance").append('<div class="button" id="copytitle">copy portal name</div>');
 		$("#copytitle").click(function() {
@@ -40,19 +55,28 @@
 		});
 		$("#enhance").append('<input class="text" id="portaltitle" type="text"></input>');
 
-		$("#enhance").append('<div class="button" id="loaddata">Get portals</div>');
+		$("#enhance").append('<div class="button" id="loaddata">Get agents</div>');
 		$("#loaddata").click(function() {
-			ing_ajaxCall();
+			ing_getAgents();
+		});
+
+		$("#enhance").append('<div class="button" id="flushagents">Flush agents</div>');
+		$("#flushagents").click(function() {
+			players = [];
+		});
+
+		$("#enhance").append('<div class="button" id="flushportals">Flush portals</div>');
+		$("#flushportals").click(function() {
+			portals = [];
 		});
 		
-		
-		$("#enhance").append('<div class="button" id="showlog">Toggle log</div>');
+		$("#enhance").append('<div class="button" id="showlog">LOG</div>');
 		$("#showlog").click(function() {
 			$("#log").toggle();
 		});
 		
-		$("body").append('<textarea rows="20" cols="60" id="textarea"></textarea>');
-		$("#enhance").append('<div class="button" id="showtextarea">Toggle textarea</div>');
+		$("body").append('<textarea rows="20" cols="90" id="textarea"></textarea>');
+		$("#enhance").append('<div class="button" id="showtextarea">TEXT</div>');
 		$("#showtextarea").click(function() {
 			$("#textarea").toggle();
 		});	
@@ -66,28 +90,22 @@
 
 	
 
-	function ing_ajaxCall() {
+	function ing_ajaxLoadPortals() {
 		ing_addLog("loading portals...");
-		var requestdata = {
-			"minLevelOfDetail":-1,
-			"boundsParamsList":	[{"id":"0120212302","minLatE6":49837982,"minLngE6":14062500,"maxLatE6":50289339,"maxLngE6":14765625,"qk":"0120212302"}],
-			"method":"dashboard.getThinnedEntitiesV2"
-		};
 
 		$.ajax({
 			type: "POST",
 			url: "/rpc/" + "dashboard.getThinnedEntitiesV2",
 			dataType: "json",
 			contentType: "application/json; charset=utf-8",
-			data: JSON.stringify(requestdata),
+			data: JSON.stringify(getThinnedEntitiesV2),
 			success: function(a) {
-				ing_processData(a);
+				ing_processPortals(a);
 			},
 			error: function(e) {
-				console.log("error");
+				ing_addLog("request failed");
 			},
 			complete: function(a) {
-				//console.log(a);
 			}
 		});	
 	}
@@ -107,21 +125,25 @@
 				ing_processUsers(a);
 			},
 			error: function(e) {
-				console.log("error");
+				ing_addLog("request failed");
 			},
 			complete: function(a) {
 			}
 		});	
 	}
 
-	function ing_processData(data) {
-		var portals = [];
+	function ing_processPortals(data) {
 		var count = 0;
 		var processed = 0;
 
+		if (data.result == undefined) { 
+			ing_addLog('wrong portal data: '+data.error);
+			return;
+		}
+
 		$.each(data.result.map, function(i, dat) {
 			$.each(dat.gameEntities, function(j, data) {
-				if (data[1] > 1357581222385) {
+				if (data[1] > time) {
 					portals[data[0]] = [];
 					portals[data[0]]["team"] = "NEUTRAL";
 					portals[data[0]]["address"] = "";
@@ -135,6 +157,12 @@
 			});
 		});
 
+		ing_addLog(processed+' portals processed from '+count+' total.');
+		
+	}
+
+	function ing_getAgents() {
+		ing_addLog('extracting agents from portals...');
 		for (key in portals) {
 			var portal = portals[key];
 			var area = portal["address"];
@@ -147,14 +175,13 @@
 				}
 			}
 		};
-		
+
 		var guids = [];
+
 		for (key in players) {
 			guids.push(key);
 		}
-		
-		ing_addLog(processed+' portals processed from '+count+' total.');
-		
+
 		ing_ajaxGetNames(guids);
 	}
 	
@@ -181,6 +208,7 @@
 				for (j in player["areas"]) {
 					areas = areas+j+" L"+player["areas"][j]+',';
 				}
+				if (player["name"] == "") player["name"] = i;
 				$("#textarea").val($("#textarea").val()+player["name"]+','+player["level"]+','+areas+'\n');
 			}
 		}
@@ -192,6 +220,7 @@
 				for (j in player["areas"]) {
 					areas = areas+j+" L"+player["areas"][j]+',';
 				}
+				if (player["name"] == "") player["name"] = i;
 				$("#textarea").val($("#textarea").val()+player["name"]+','+player["level"]+','+areas+'\n');
 			}
 		}
