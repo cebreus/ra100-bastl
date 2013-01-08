@@ -89,7 +89,7 @@
     }, false);
 
 	
-
+/*
 	function ing_ajaxLoadPortals() {
 		ing_addLog("loading portals...");
 
@@ -109,7 +109,8 @@
 			}
 		});	
 	}
-	
+*/
+
 	function ing_ajaxGetNames(guids) {
 		ing_addLog("getting codenames...");
 		var requestdata = {"guids":	guids,
