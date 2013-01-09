@@ -12,14 +12,7 @@
 	var portalUrl = "http://www.ingress.com/intel?latE6=!LAT!&lngE6=!LNG!&z=18";
 	var getThinnedEntitiesV2 = {};
 	
-// load of jQquery
-	var headID = document.getElementsByTagName("head")[0];         
-    var newScript = document.createElement('script');
-    newScript.type = 'text/javascript';
-    newScript.id = 'myjQuery';
-    newScript.src = 'http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js';
-    headID.appendChild(newScript);
-// run jQuery code
+// execute code on load
     window.addEventListener('load', function (e)  {
 
 		$(document).ajaxSend(function(event, jqxhr, settings) {
@@ -63,11 +56,13 @@
 		$("#enhance").append('<div class="button" id="flushagents">Flush agents</div>');
 		$("#flushagents").click(function() {
 			players = [];
+			ing_addLog('agents flushed');
 		});
 
 		$("#enhance").append('<div class="button" id="flushportals">Flush portals</div>');
 		$("#flushportals").click(function() {
 			portals = [];
+			ing_addLog('portals flushed');
 		});
 		
 		$("#enhance").append('<div class="button" id="showlog">LOG</div>');
@@ -138,7 +133,7 @@
 		var processed = 0;
 
 		if (data.result == undefined) { 
-			ing_addLog('wrong portal data: '+data.error);
+			ing_addLog('error: '+data.error);
 			return;
 		}
 
@@ -158,7 +153,12 @@
 			});
 		});
 
-		ing_addLog(processed+' portals processed from '+count+' total.');
+		var total = 0;
+		for (i in portals) {
+			total++;
+		}
+
+		ing_addLog(processed+' portals processed from '+count+' loaded. Total portals: '+total );
 		
 	}
 
