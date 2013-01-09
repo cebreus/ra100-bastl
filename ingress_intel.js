@@ -207,10 +207,10 @@
 			if (player.team == "ALIENS") {
 				var	areas = "";
 				for (j in player["areas"]) {
-					areas = areas+j+" L"+player["areas"][j]+',';
+					areas = areas+j+" L"+player["areas"][j]+'\t';
 				}
 				if (player["name"] == "") player["name"] = i;
-				$("#textarea").val($("#textarea").val()+player["name"]+','+player["level"]+','+areas+'\n');
+				$("#textarea").val($("#textarea").val()+player["name"]+'\t'+player["level"]+'\t'+areas+'\n');
 			}
 		}
 		$("#textarea").val($("#textarea").val()+'\nRESISTANCE\n');
@@ -219,10 +219,10 @@
 			if (player.team == "RESISTANCE") {
 				var	areas = "";
 				for (j in player["areas"]) {
-					areas = areas+j+" L"+player["areas"][j]+',';
+					areas = areas+j+" L"+player["areas"][j]+'\t';
 				}
 				if (player["name"] == "") player["name"] = i;
-				$("#textarea").val($("#textarea").val()+player["name"]+','+player["level"]+','+areas+'\n');
+				$("#textarea").val($("#textarea").val()+player["name"]+'\t'+player["level"]+'\t'+areas+'\n');
 			}
 		}
 		$("#textarea").show();
