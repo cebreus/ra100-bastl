@@ -1,15 +1,19 @@
 // ==UserScript==
-// @name Ingress Intel enhance
-// @description Enhances Ingress Intel, maybe
-// @include http://www.ingress.com/intel
-// @match http://www.ingress.com/intel
+// @name           Ingress Intel enhance
+// @version        0.0.1-2013-02-28-120101
+// @description    Enhances Ingress Intel, maybe
+// @updateURL      https://raw.github.com/scrool/ra100-bastl/master/ingress_intel.js
+// @downloadURL    https://raw.github.com/scrool/ra100-bastl/master/ingress_intel.js
+// @include        https://www.ingress.com/intel*
+// @match          https://www.ingress.com/intel*
 // ==/UserScript==
+
 (function ()
 {
 	var players = [];
 	var portals = [];
 	var time = 0; //unix epoch timestamp in miliseconds
-	var portalUrl = "http://www.ingress.com/intel?latE6=!LAT!&lngE6=!LNG!&z=18";
+	var portalUrl = "https://www.ingress.com/intel?latE6=!LAT!&lngE6=!LNG!&z=18";
 	var getThinnedEntitiesV2 = {};
 	
 // execute code on load
